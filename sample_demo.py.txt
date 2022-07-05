@@ -1,0 +1,43 @@
+def f1(x, y):
+  z = x[:y]
+  return z
+
+def f2(x, y):
+  z = x[y].unique().tolist()
+  return z
+
+def f3(x, y):
+  z = x[y]
+  return z
+
+def f4(x):
+  x="hello"
+  return x
+
+def f5(z):
+  z=90
+  return z
+
+def f6(w):
+  w=[1,2,3,4,5]
+  return w
+
+def f7(p):
+  p=['one','two','three','four']
+  return p
+
+def f8():
+  i = 10
+  print("The value of i is"+i)
+ 
+def f9(input_dict):
+  input_dict = {"k1":1,"k2":2,"k3":3,"k4":4}
+  return input_dict
+
+def f10():
+  q=10
+  w=20
+  e=9
+  v=30
+  c=q+w+e+v
+  return c
