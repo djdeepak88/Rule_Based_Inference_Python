@@ -41,3 +41,11 @@ def f10():
   v=30
   c=q+w+e+v
   return c
+
+def f11(df):
+  df1 = df.apply(np.sqrt)
+  return df1
+
+
+
+  

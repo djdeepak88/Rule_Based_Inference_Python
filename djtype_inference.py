@@ -17,7 +17,7 @@ class Visitor(ast.NodeVisitor):
     def visit(self,node: ast):
         print(node)
         self.generic_visit(node)
-     
+
     def function_visitor(self,nodes: ast):
         # Traversing the AST tree of the source code.
         all_func_def_list=[]
@@ -52,7 +52,7 @@ class Visitor(ast.NodeVisitor):
                 for bod in node.body:
                     # Assign object.
                     arg_def=[]
-                   
+                    # Assign object in body.
                     if isinstance(bod, ast.Assign):
                         bod_dump = ast.dump(bod.value)
                         print("Assign object-----")
@@ -68,20 +68,39 @@ class Visitor(ast.NodeVisitor):
                         if isinstance(bod.value, ast.Call): 
                            print(arg_lis)
                            print("Call Attribute")
-                           print(bod.value.func.value.func.value) 
-                           if isinstance(bod.value.func.value.func.value, ast.Subscript):
-                              print(bod.value.func.value.func.value.value.id)
-                              if (bod.value.func.value.func.value.value.id) in arg_lis:
-                                arg_def.append(bod.value.func.value.func.value.value.id)
-                                arg_def.append("pandas.Dataframe")
-                                Type_val = "pandas.Dataframe"
-                              print(bod.value.func.value.func.value._attributes)
-                              print(bod.value.func.value.func.value.slice.id)
-                              if bod.value.func.value.func.value.slice.id in arg_lis:
-                                arg_def.append(bod.value.func.value.func.value.slice.id)
-                                arg_def.append("Int")
-                              print(bod.value.func.value.func.value.slice._attributes)
-                              print(bod.value.func.value.func.value.slice) 
+                           
+                           if isinstance(bod.value.func, ast.Attribute):
+                                print(ast.dump(bod.value.func.value))
+
+                                if isinstance(bod.value.func.value, ast.Name):
+                                    print(bod.value.func.value.id)
+                                    print(bod.value.func.attr)
+                                    if(bod.value.func.attr=="apply"):
+                                        print("Dataframe apply.")
+                                        print(ast.dump(bod.value.func))
+                                        print("Argument list for more function calls.")
+                                        for arelem in bod.value.args:
+                                            print(arelem.value.id)
+                                            print(arelem.attr)
+                                            
+                                    if(bod.value.func.value.id) in arg_lis:
+                                        arg_def.append(bod.value.func.value.id)
+                                        arg_def.append("pandas.Dataframe")
+                                        Type_val = "pandas.Dataframe"
+
+                                elif isinstance(bod.value.func.value.func.value, ast.Subscript):
+                                    print(bod.value.func.value.func.value.value.id)
+                                    if (bod.value.func.value.func.value.value.id) in arg_lis:
+                                        arg_def.append(bod.value.func.value.func.value.value.id)
+                                        arg_def.append("pandas.Dataframe")
+                                        Type_val = "pandas.Dataframe"
+                                    print(bod.value.func.value.func.value._attributes)
+                                    print(bod.value.func.value.func.value.slice.id)
+                                    if bod.value.func.value.func.value.slice.id in arg_lis:
+                                        arg_def.append(bod.value.func.value.func.value.slice.id)
+                                        arg_def.append("Int")
+                                    print(bod.value.func.value.func.value.slice._attributes)
+                                    print(bod.value.func.value.func.value.slice) 
 
                         # Dictionary object       
                         if isinstance(bod.value, ast.Dict):
@@ -139,7 +158,7 @@ class Visitor(ast.NodeVisitor):
                                     arg_def.append("List")
                                     Type_val = 'List'
 
-                                if(bod.value.slice.upper.id in arg_lis):
+                                if bod.value.slice.upper.id in arg_lis:
                                     arg_def.append(bod.value.slice.upper.id)
                                     arg_def.append("Int")
 
@@ -171,13 +190,13 @@ class Visitor(ast.NodeVisitor):
                                 var_id = val.id
                                 print(val)
                                 print(var_id)
-                            
+
                             vars_cons = bod.value.value
                             type_c = type(vars_cons)
                             if var_id in arg_lis:
                                 arg_def.append(var_id)    
-                                print(var_id)
-                                print(type_c)
+                                #print(var_id)
+                                #print(type_c)
                                 arg_def.append(type_c)
                             Type_val = type_c     
 
@@ -186,21 +205,21 @@ class Visitor(ast.NodeVisitor):
                             Type_val="Unknown"
                             # Append the type and arg val.
                             arg_def.append(Type_val)
-                    # Avoid adding empty list to the final function definition.    
-                    if len(arg_def)!=0:
-                        func_list.append(arg_def)
-                    print(func_list)
+                        # Avoid adding empty list to the final function definition.    
+                        if len(arg_def)!=0:
+                            func_list.append(arg_def)
+                        print(func_list)
+                    
                     # Return object.    
                     if isinstance(bod, ast.Return):
                         return_val = bod.value.id
-                        print("Return object-----")
-                        print(return_val)
-                    # argument list.
-                    
+                        #print("Return object-----")
+                        #print(return_val)
+
                 all_func_def_list.append(func_list)        
         return all_func_def_list        
 
-# Read the input file path
+# Read the input file path.
 source_filename = sys.argv[1].strip()
 print(source_filename)
 
@@ -225,8 +244,12 @@ if os.path.isfile(source_filename):
     #Visitor().visit(node)
     fdef_list=Visitor().function_visitor(node)
     # Final Function definition List.
-    print("Final Function Definition Inference.")
+    print("\n")
+    print("Final Function Definition and Type Inference**********************************")
+    print("\n")
     print(fdef_list)
+    print("\n")
+    print("******************************************************************************")
     
 else:
     print("Invalid File!!!. Please Provide Valid File Path.")
