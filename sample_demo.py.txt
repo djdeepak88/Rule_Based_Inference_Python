@@ -1,3 +1,5 @@
+import pandas as pd
+
 def f1(x, y):
   z = x[:y]
   return z
@@ -29,7 +31,7 @@ def f7(p):
 def f8():
   i = 10
   print("The value of i is"+i)
- 
+
 def f9(input_dict):
   input_dict = {"k1":1,"k2":2,"k3":3,"k4":4}
   return input_dict
@@ -46,6 +48,24 @@ def f11(df):
   df1 = df.apply(np.sqrt)
   return df1
 
+def f12(df):
+  df1 = df.sort_index()
+  return df1
 
+def f13(df):
+  df = df.drop(df.tail(n).index)
+  return df
 
-  
+def f14(df_final):
+   temp_dict = {'Name':['Renault','Duster','Maruti','Honda City','Brezza'],'Ratings':[9.0,8.0,5.0,6.0,7.0]}
+   df_final = pd.DataFrame(temp_dict, index=['Car1','Car2','Car3','Car4','Car5'])
+   return df_final
+
+def f15(df_input):
+   df_input = df_input.replace(to_replace= np.nan, value = 17)
+   return df_input
+
+def f16(df_input):
+   new_row = {'A':4, 'B':2, 'C':5, 'D':4, 'city':'Berlin'}
+   df_input = df_input.append(new_row, ignore_index=True)
+   return df_input

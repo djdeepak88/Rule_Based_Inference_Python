@@ -2,10 +2,9 @@
 # Rules based inference for arguments type in python.
 # Arguments :- Python source file path.
 # Result:- list containing the inference of the arguments of the functions based 
-# on the AST parsing and logic inferencing. 
+# AST parsing and logic inferencing. 
 
 import os
-from queue import Empty
 import sys
 import ast
 from pprint import pprint
@@ -71,10 +70,13 @@ class Visitor(ast.NodeVisitor):
                            
                            if isinstance(bod.value.func, ast.Attribute):
                                 print(ast.dump(bod.value.func.value))
-
+                                # Attribute contains Name object.                
                                 if isinstance(bod.value.func.value, ast.Name):
+                                    print("value")
                                     print(bod.value.func.value.id)
+                                    print("attr")
                                     print(bod.value.func.attr)
+                                    # Apply function of DataFrames.
                                     if(bod.value.func.attr=="apply"):
                                         print("Dataframe apply.")
                                         print(ast.dump(bod.value.func))
@@ -82,12 +84,25 @@ class Visitor(ast.NodeVisitor):
                                         for arelem in bod.value.args:
                                             print(arelem.value.id)
                                             print(arelem.attr)
-                                            
+                                    # For DataFrame creation method.        
+                                    if(bod.value.func.attr=="DataFrame"):
+                                        print("Assign target variable")
+                                        print(bod.targets)
+                                        # List objects of target variables.
+                                        for elem in bod.targets:
+                                            print(elem.id)
+                                            if elem.id in arg_lis:
+                                                print("Dataframe Manipulation")
+                                                arg_def.append(elem.id)
+                                                arg_def.append("pandas.Dataframe")
+                                                Type_val = "pandas.Dataframe"
+                                    # When the dataframe funtions are used.    
                                     if(bod.value.func.value.id) in arg_lis:
                                         arg_def.append(bod.value.func.value.id)
                                         arg_def.append("pandas.Dataframe")
                                         Type_val = "pandas.Dataframe"
 
+                                # Part of the Subscript object.
                                 elif isinstance(bod.value.func.value.func.value, ast.Subscript):
                                     print(bod.value.func.value.func.value.value.id)
                                     if (bod.value.func.value.func.value.value.id) in arg_lis:
@@ -112,16 +127,19 @@ class Visitor(ast.NodeVisitor):
                            # Arguments list match.     
                            if var_id in arg_lis:
                                arg_def.append(var_id)    
-                           dic_val = bod.value
-                           print(dic_val)
-                           print("Dictionary Keys")
-                           for ele_keys in bod.value.keys:
-                               print(ele_keys.value)
-                           print("Dictionary Values:-")    
-                           for ele_val in bod.value.values:
-                               print(ele_val.value)
-                           arg_def.append("Dict") 
-                           Type_val = "Dict" 
+                               dic_val = bod.value
+                               print(dic_val)
+                               print("Dictionary Keys")
+                               for ele_keys in bod.value.keys:
+                                  print(ele_keys.value)
+                               print("Dictionary Values:-")    
+                               for ele_val in bod.value.values:
+                                  if isinstance(ele_val, ast.List):
+                                     print(ele_val)
+                                  else:
+                                     print(ele_val.value)
+                               arg_def.append("Dict") 
+                               Type_val = "Dict" 
 
                         # Lists Instance       
                         if isinstance(bod.value, ast.List):
@@ -200,11 +218,12 @@ class Visitor(ast.NodeVisitor):
                                 arg_def.append(type_c)
                             Type_val = type_c     
 
-                        # If the Type cannot be inferred.
-                        if Type_val=="":
-                            Type_val="Unknown"
-                            # Append the type and arg val.
-                            arg_def.append(Type_val)
+                        # If the Type cannot be inferred.#
+                        if len(arg_def)!=0:
+                            if Type_val=="":
+                                Type_val="Unknown"
+                                # Append the type and arg val.
+                                arg_def.append(Type_val)
                         # Avoid adding empty list to the final function definition.    
                         if len(arg_def)!=0:
                             func_list.append(arg_def)
