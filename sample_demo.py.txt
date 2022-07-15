@@ -49,12 +49,12 @@ def f11(df):
   return df1
 
 def f12(df):
-  df1 = df.sort_index()
-  return df1
+   df1 = df.sort_index()
+   return df1
 
 def f13(df):
-  df = df.drop(df.tail(n).index)
-  return df
+   df = df.drop(df.tail(n).index)
+   return df
 
 def f14(df_final):
    temp_dict = {'Name':['Renault','Duster','Maruti','Honda City','Brezza'],'Ratings':[9.0,8.0,5.0,6.0,7.0]}
@@ -69,3 +69,24 @@ def f16(df_input):
    new_row = {'A':4, 'B':2, 'C':5, 'D':4, 'city':'Berlin'}
    df_input = df_input.append(new_row, ignore_index=True)
    return df_input
+
+def f17(df_in):
+   doubler = lambda x:x*2
+   df_out = df_in.applymap(doubler)
+   return df_out
+
+def f18(df_i):
+   df_i = df_i.transform(lambda y:y*3)
+   return df_i
+
+def f19(df_inp):
+   df_inp = df_inp.isnull().sum()
+   return df_inp
+
+def df_cumsum(df_input):
+   df_out = df_input.cumsum()
+   return df_out
+
+def df_mergefunc(df1,df2):
+   merged_df = pd.merge(df1,df2)
+   return merged_df

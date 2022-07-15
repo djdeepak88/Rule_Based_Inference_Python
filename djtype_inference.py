@@ -69,8 +69,25 @@ class Visitor(ast.NodeVisitor):
                            print("Call Attribute")
                            
                            if isinstance(bod.value.func, ast.Attribute):
-                                print(ast.dump(bod.value.func.value))
-                                # Attribute contains Name object.                
+                                print(ast.dump(bod.value.func))
+                                # Attribute contains Name object.
+                                # Nested Call and Attribute 
+                                if isinstance(bod.value.func.value, ast.Call):
+                                    print(ast.dump(bod.value.func.value))
+                                    print(bod.value.func.value.func.value)
+                                    if isinstance(bod.value.func.value.func.value, ast.Name):
+                                        print(bod.value.func.value.func.value.id)
+                                        print(bod.value.func.value.func.attr)
+                                        print(bod.value.func.attr)
+                                        # Arguments list.
+                                        print(bod.value.func)
+                                        
+                                        for argx in arg_lis:
+                                            if argx==bod.value.func.value.func.value.id:
+                                                arg_def.append(argx)
+                                                arg_def.append("pandas.Dataframe")
+                                                Type_val = "pandas.Dataframe"
+                                                     
                                 if isinstance(bod.value.func.value, ast.Name):
                                     print("value")
                                     print(bod.value.func.value.id)
@@ -84,6 +101,27 @@ class Visitor(ast.NodeVisitor):
                                         for arelem in bod.value.args:
                                             print(arelem.value.id)
                                             print(arelem.attr)
+                                    # isnull() function of the Dataframes.        
+                                    if(bod.value.func.attr=="isnull"):
+                                        print("Dataframe isnull() function.")
+                                        print(ast.dump(bod.value.func))
+                                        print("Argument list for more function calls.")
+                                        for arelem in bod.value.args:
+                                            print(arelem.value.id)
+                                            print(arelem.attr)
+                                    # merge function of the dataframes.
+                                    if(bod.value.func.attr=="merge"):
+                                        print("Dataframe merge() function.")
+                                        print(ast.dump(bod.value.func))
+                                        print("Argument list for more function calls.")
+                                        for arelem in bod.value.args:
+                                            print(ast.dump(arelem))
+                                            print(arelem.id)
+                                            if(arelem.id) in arg_lis:
+                                                arg_def.append(arelem.id)
+                                                arg_def.append("pandas.Dataframe")
+                                                Type_val = "pandas.Dataframe"
+
                                     # For DataFrame creation method.        
                                     if(bod.value.func.attr=="DataFrame"):
                                         print("Assign target variable")
